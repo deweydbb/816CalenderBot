@@ -8,7 +8,7 @@ import logging
 # from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-# app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 # ### START OF CONFIG ###
 
