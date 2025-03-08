@@ -1,5 +1,4 @@
-azure-functions==1.21.3
-gspread==2.0.0
-# gspread-formatting
+azure-functions
+requests
 python-dateutil
-slack_sdk==3.34.0
+slack_sdk
