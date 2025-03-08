@@ -372,4 +372,3 @@ def send_slack_messages():
 def calender_bot(myTimer: func.TimerRequest) -> None:
     logging.info('Python timer trigger function executed.')
     send_message('#bot-tester', 'test message')
-    send_slack_messages()
