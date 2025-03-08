@@ -13,6 +13,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 #     send_slack_messages()
 
 
+
 @app.route(route="http_trigger_bot", auth_level=func.AuthLevel.ANONYMOUS)
 def http_trigger_bot(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
