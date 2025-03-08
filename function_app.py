@@ -1,11 +1,9 @@
 import azure.functions as func
-import datetime
-import json
 import logging
 
 import os
 import gspread
-from gspread_formatting import get_effective_format
+# from gspread_formatting import get_effective_format
 from dateutil.parser import parse
 from datetime import datetime, date, timedelta
 
@@ -180,19 +178,19 @@ def get_date_location(date, all_cells):
                 return row_idx, col_idx  # Return the first occurrence
     raise ValueError(f"Date: {date} not found in the calender")
 
-def is_special_cell(worksheet, row, col):
-    """
-    Determines if a cell is a "special cell" that does not include volunteer info by checking
-    if the background color is not gray
-    """
-    # need to offset 0 based indexing to convert row/column index into excel label. Ex: C15
-    label = gspread.utils.rowcol_to_a1(row + 1, col + 1)
-    try:
-        background_color = get_effective_format(worksheet, label).backgroundColor
-        return not (background_color.red == background_color.green and background_color.green == background_color.blue)
-    except AttributeError:
-        # cell does not have background color, assume is not special
-        False
+# def is_special_cell(worksheet, row, col):
+#     """
+#     Determines if a cell is a "special cell" that does not include volunteer info by checking
+#     if the background color is not gray
+#     """
+#     # need to offset 0 based indexing to convert row/column index into excel label. Ex: C15
+#     label = gspread.utils.rowcol_to_a1(row + 1, col + 1)
+#     try:
+#         background_color = get_effective_format(worksheet, label).backgroundColor
+#         return not (background_color.red == background_color.green and background_color.green == background_color.blue)
+#     except AttributeError:
+#         # cell does not have background color, assume is not special
+#         False
 
 def get_voluneers_for_date(date, all_cells, worksheet):
     """
@@ -213,7 +211,7 @@ def get_voluneers_for_date(date, all_cells, worksheet):
         cell = all_cells[row][col]
 
         # check if the cell is special or contains volunteer signup info
-        if is_special_cell(worksheet, row, col):
+        if False: # is_special_cell(worksheet, row, col):
             special_rows.append(cell)
         else:
             # get volunteers names. The cell may contain multiple volunteers sigining up separated
@@ -269,18 +267,19 @@ def send_slack_messages():
             if len(volunteers) < VOLUNTEER_THRESHOLD or not has_keyholder:
                 send_volunteer_warning_message(day_of_week, date_to_check, volunteers, has_keyholder)
 
-    for days_out in SHIFT_SPECIAL_NOTES_DAYS:
-        date_to_check = today + timedelta(days=days_out)
-        day_of_week = DAYS_OF_WEEK[date_to_check.weekday()]
+    # for days_out in SHIFT_SPECIAL_NOTES_DAYS:
+    #     date_to_check = today + timedelta(days=days_out)
+    #     day_of_week = DAYS_OF_WEEK[date_to_check.weekday()]
 
-        if day_of_week in SHIFT_DAYS:
-            _, special_cells = get_voluneers_for_date(today + timedelta(days=days_out), all_cells, current_calender)
+    #     if day_of_week in SHIFT_DAYS:
+    #         _, special_cells = get_voluneers_for_date(today + timedelta(days=days_out), all_cells, current_calender)
 
-            if special_cells:
-                send_special_note_message(day_of_week, date_to_check, special_cells)
+    #         if special_cells:
+    #             send_special_note_message(day_of_week, date_to_check, special_cells)
 
 @app.timer_trigger(schedule="*/30 * * * * *", arg_name="myTimer", run_on_startup=False,
               use_monitor=False) 
 def calender_bot(myTimer: func.TimerRequest) -> None:
     logging.info('Python timer trigger function executed.')
+    send_message('#bot-tester', 'test message')
     send_slack_messages()
