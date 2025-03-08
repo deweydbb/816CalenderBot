@@ -338,7 +338,6 @@ def get_has_keyholder(volunteers):
     return any(keyholder_mark in volunteer.lower() for keyholder_mark in KEYHOLDER_MARKS for volunteer in volunteers)
 
 def send_slack_messages():
-    # TODO REPLACEEEEEEE
     google_api_key = os.getenv('google_api_key')
 
     # get the entire sheet as a 2D array

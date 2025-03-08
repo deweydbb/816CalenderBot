@@ -368,8 +368,7 @@ def send_slack_messages():
             if special_cells:
                 send_special_note_message(day_of_week, date_to_check, special_cells)
 
-@app.timer_trigger(schedule="*/30 * * * * *", arg_name="myTimer", run_on_startup=False,
-              use_monitor=False) 
+@app.timer_trigger(schedule="*/30 * * * * *", arg_name="myTimer", run_on_startup=False, use_monitor=False) 
 def calender_bot(myTimer: func.TimerRequest) -> None:
     logging.info('Python timer trigger function executed.')
     send_message('#bot-tester', 'test message')
