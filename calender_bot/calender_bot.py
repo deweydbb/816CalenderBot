@@ -63,11 +63,9 @@ def get_cell_is_gray(cell):
         red = backgroundColor['red'] if 'red' in backgroundColor else None
         green = backgroundColor['green'] if 'green' in backgroundColor else None
         blue = backgroundColor['blue'] if 'blue' in backgroundColor else None
-        if red is not None and green is not None and red != green:
-            return False
-        if red is not None and blue is not None and red != blue:
-            return False
-        if green is not None and blue is not None and green != blue:
+        if red == green and green == blue:
+            return True
+        else:
             return False
 
     return True
@@ -117,16 +115,6 @@ def get_sheet_data(api_key, sheet_id):
         data.append(new_row)
 
     return data
-
-
-
-###############################################################
-
-#
-#
-# Start of calender_bot
-#
-#
 
 
 def convert_dates(all_cells):
@@ -186,7 +174,7 @@ def get_voluneers_for_date(date, all_cells):
 def get_has_keyholder(volunteers):
     return any(keyholder_mark in volunteer.lower() for keyholder_mark in KEYHOLDER_MARKS for volunteer in volunteers)
 
-def send_slack_messages():
+def send_slack_messages(today = date.today()):
     google_api_key = os.getenv('google_api_key')
 
     # get the entire sheet as a 2D array
@@ -195,8 +183,6 @@ def send_slack_messages():
     # # converts any strings that are dates into date objects
     # # if a cell is not a date, leave as is
     convert_dates(all_cells)
-
-    today = date.today()
 
     for days_out in SHIFT_VOLUNTEER_WARNING_DAYS:
         date_to_check = today + timedelta(days=days_out)
