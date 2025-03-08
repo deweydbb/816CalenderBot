@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 
-# from calenderBot.calender_bot import send_slack_messages
+from calenderBot.calender_bot import send_slack_messages
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -11,4 +11,4 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
               use_monitor=False) 
 def calender_bot(myTimer: func.TimerRequest) -> None:
     logging.info('Python timer trigger function executed.')
-    # send_slack_messages()
+    send_slack_messages()
