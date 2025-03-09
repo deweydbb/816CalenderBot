@@ -39,6 +39,7 @@ jobs:
         shell: bash
         run: |
           mkdir .python_packages
+          ls -la
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
 
       # Optional: Add step to run tests here
