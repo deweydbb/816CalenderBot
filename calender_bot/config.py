@@ -23,7 +23,7 @@ SHEET_ID = get_config_from_environment('SHEET_ID')
 SHEET_URL=f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit"
 
 # text people can put after their name to indicate to the bot they are keyholder
-KEYHOLDER_MARKS = get_config_from_environment('KEYHOLDER_MARKS', default=['🔑'])
+KEYHOLDER_MARKS = json.loads(get_config_from_environment('KEYHOLDER_MARKS', default='["🔑"]'))
 
 # Days where the shop is open
 SHIFT_DAYS = json.loads(get_config_from_environment('SHIFT_DAYS', default='["Monday", "Thursday", "Saturday"]'))
@@ -34,18 +34,18 @@ if set(SHIFT_DAY_TO_CHANNEL.keys()) != set(SHIFT_DAYS):
     raise KeyError("SHIFT_DAYS and SHIFT_DAY_TO_CHANNEL must have the same days") 
 
 
-
 # How many days out should the low volunteer warning and no keyholder warning be sent 
 SHIFT_VOLUNTEER_WARNING_DAYS = json.loads(get_config_from_environment('SHIFT_VOLUNTEER_WARNING_DAYS', '[6, 3, 0]'))
 # How many days out should the special notes for shift be sent out. 
 SHIFT_SPECIAL_NOTES_DAYS = json.loads(get_config_from_environment('SHIFT_SPECIAL_NOTES_DAYS', '[0]'))
 
 # if under number of volunteers signed up for shift, send warning
-VOLUNTEER_THRESHOLD = 3
+VOLUNTEER_THRESHOLD = int(get_config_from_environment('VOLUNTEER_THRESHOLD', default='3'))
 
 logging.info(
     f"KEYHOLDER_MARKS: {KEYHOLDER_MARKS}\n"
     f"SHIFT_DAYS: {SHIFT_DAYS}\n" 
     f"SHIFT_DAY_TO_CHANNEL: {SHIFT_DAY_TO_CHANNEL}\n" 
-    f"SHIFT_VOLUNTEER_WARNING_DAYS: {SHIFT_VOLUNTEER_WARNING_DAYS}"
+    f"SHIFT_VOLUNTEER_WARNING_DAYS: {SHIFT_VOLUNTEER_WARNING_DAYS}\n"
+    f"VOLUNTEER_THRESHOLD: {VOLUNTEER_THRESHOLD}\n"
 )
