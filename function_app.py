@@ -3,7 +3,7 @@ import logging
 # from datetime import date, timedelta
 
 # from calender_bot.calender_bot import send_slack_messages
-from calender_bot.config import SHEET_ID
+from calender_bot.slack import send_message
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -28,5 +28,7 @@ def http_trigger_bot(req: func.HttpRequest) -> func.HttpResponse:
     #     return func.HttpResponse(f"Hello. Sending as if today was {today}")
     # else:
     #     send_slack_messages()
+
+    send_message('#bot-tester', 'test message base slack')
     
-    return func.HttpResponse(f"Hello. Sending as if today was today, sheet id {SHEET_ID}")
+    return func.HttpResponse("Hello. Sending as if today was today, sheet id")
