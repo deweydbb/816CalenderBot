@@ -8,11 +8,10 @@ from calender_bot.slack import send_message
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 
-# @app.timer_trigger(schedule="*/30 * * * * *", arg_name="myTimer", run_on_startup=False, use_monitor=False) 
-# def calender_bot(myTimer: func.TimerRequest) -> None:
-#     logging.info('Python timer trigger function executed.')
-#     send_slack_messages()
-
+@app.timer_trigger(schedule="0 0 9 * * *", arg_name="myTimer", run_on_startup=False, use_monitor=False) 
+def calender_bot(myTimer: func.TimerRequest) -> None:
+    logging.info('Python timer trigger function executed.')
+    send_slack_messages()
 
 
 @app.route(route="http_trigger_bot", auth_level=func.AuthLevel.ANONYMOUS)
@@ -31,4 +30,4 @@ def http_trigger_bot(req: func.HttpRequest) -> func.HttpResponse:
 
     send_message('#bot-tester', 'test message base slack')
     
-    return func.HttpResponse("Hello. Sending as if today was today, sheet id")
+    return func.HttpResponse(f"Hello. Sending as if today was {today}")
