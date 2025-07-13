@@ -108,10 +108,10 @@ def send_message(channel_id, message, use_blocks=False, fallback_text=None):
 
 def get_row_and_column_count(sheets, gid):
     for sheet in sheets:
-        if str(sheet['properties']['index']) == str(gid):
+        if str(sheet['properties']['sheetId']) == str(gid):
             gridProps = sheet['properties']['gridProperties']
-            return gridProps['rowCount'], gridProps['columnCount']
-    raise Exception("Sheet GID not found")
+            return sheet['properties']['title'], gridProps['rowCount'], gridProps['columnCount']
+    raise Exception("Sheet GID not found: " + str(gid) + str(sheets))
         
 ## shamelessly stolen from gspread
 def rowcol_to_a1(row: int, col: int) -> str:
@@ -149,13 +149,14 @@ def rowcol_to_a1(row: int, col: int) -> str:
     return label
 
 # returns the range of all the sheets values in A1 format
-def get_entire_sheet_range(num_rows, num_cols):
-    return f"A1:{rowcol_to_a1(num_rows, num_cols)}"
+def get_entire_sheet_range(sheet_title, num_rows, num_cols):
+    return f"{sheet_title}!A1:{rowcol_to_a1(num_rows, num_cols)}"
 
 def get_sheet_row_data(sheets, gid):
     for sheet in sheets:
         if str(sheet['properties']['sheetId']) == str(gid):
             return sheet['data'][0]['rowData']
+    raise Exception("Sheet GID not found: " + str(gid))
 
 
 def get_sheet_data(sheet_id, gid):
@@ -164,14 +165,15 @@ def get_sheet_data(sheet_id, gid):
     base_url = f"https://sheets.googleapis.com/v4/spreadsheets/{sheet_id}"
     key_param = f"key={api_key}"
     # what fields to return from the api
-    field_mask = "fields=sheets.properties(index,sheetId,gridProperties(rowCount,columnCount))"
+    field_mask = "fields=sheets.properties(title,sheetId,gridProperties(rowCount,columnCount))"
+
     r = requests.get(f"{base_url}?{key_param}&{field_mask}")
 
     sheets = r.json()['sheets']
 
-    num_rows, num_cols = get_row_and_column_count(sheets, gid)
+    sheet_title, num_rows, num_cols = get_row_and_column_count(sheets, gid)
 
-    sheet_range = get_entire_sheet_range(num_rows, num_cols)
+    sheet_range = get_entire_sheet_range(sheet_title, num_rows, num_cols)
 
     # what fields to return from the third api call
     field_mask = "fields=sheets(properties.sheetId,data.rowData.values.formattedValue)"
