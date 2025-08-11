@@ -8,8 +8,47 @@ import httplib2
 from apiclient import discovery
 from google.oauth2 import service_account
 
-from calender_bot.calender_bot import get_default_sheet, get_entire_sheet_range, get_cell_is_date
+from calender_bot.calender_bot import get_default_sheet, get_cell_is_date
 from calender_bot.config import *
+
+## shamelessly stolen from gspread
+def rowcol_to_a1(row: int, col: int) -> str:
+    """Translates a row and column cell address to A1 notation.
+
+    :param row: The row of the cell to be converted.
+        Rows start at index 1.
+    :type row: int, str
+
+    :param col: The column of the cell to be converted.
+        Columns start at index 1.
+    :type row: int, str
+
+    :returns: a string containing the cell's coordinates in A1 notation.
+
+    Example:
+
+    >>> rowcol_to_a1(1, 1)
+    A1
+
+    """
+
+    div = col
+    column_label = ""
+
+    while div:
+        (div, mod) = divmod(div, 26)
+        if mod == 0:
+            mod = 26
+            div -= 1
+        column_label = chr(mod + 64) + column_label
+
+    label = "{}{}".format(column_label, row)
+
+    return label
+
+# returns the range of all the sheets values in A1 format
+def get_entire_sheet_range(num_rows, num_cols):
+    return f"A1:{rowcol_to_a1(num_rows, num_cols)}"
 
 def get_sheet_data(api_key, sheet_id):
     base_url = f"https://sheets.googleapis.com/v4/spreadsheets/{sheet_id}"
@@ -23,6 +62,7 @@ def get_sheet_data(api_key, sheet_id):
 
     num_rows = default_sheet['properties']['gridProperties']['rowCount']
     num_cols = default_sheet['properties']['gridProperties']['columnCount']
+
     sheet_range = get_entire_sheet_range(num_rows, num_cols)
 
     # what fields to return from the third api call
