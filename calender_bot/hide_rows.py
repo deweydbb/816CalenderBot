@@ -158,8 +158,9 @@ def hide_rows(today = date.today()):
     # get the index of the row containing todays date
     today_row_index, _ = get_date_location(today, data)
 
+    logging.info(default_sheet)
     
-    frozen_row_count = default_sheet['properties']['gridProperties']['frozenRowCount']
+    frozen_row_count = default_sheet.get('properties').get('gridProperties').get('frozenRowCount', 0)
     # get first unhidden row that is not frozen (pinned)
     first_non_hidden_row_index = get_first_non_hidden_row(data, frozen_row_count)
 
