@@ -85,7 +85,7 @@ def send_volunteer_warning_message(config: MessageConfig, day_of_week, shift_dat
         else:
             message += f"*•* We need more wrenches! No one has signed up :cry:\n"
             
-        message += f"\t• *Sign up here: <{SHEET_URL}|Calender>*\n" # respectfully fuck slack for using this weird flavor of "markdown"
+        message += f"\t• *Sign up here: <{SHEET_URL}|Calendar>*\n" # respectfully fuck slack for using this weird flavor of "markdown"
     if not has_keyholder:
         # TODO respect config.notify_keyholders
         message += f"*•* We need a keyholder! (Remember to put {config.get_keyholder_marks_list()} after your name if are a keyholder)\n"
@@ -95,7 +95,7 @@ def send_volunteer_warning_message(config: MessageConfig, day_of_week, shift_dat
 
 
 def send_special_note_message(config: MessageConfig, day_of_week, shift_date, special_notes):
-    """Sends a message to a slack channel with any notes for the shift left in the calender"""
+    """Sends a message to a slack channel with any notes for the shift left in the calendar"""
     message = "<!channel> " if config.notify_channel else ""
     message += f"For the shift {get_day_formatted(day_of_week, shift_date)} there are the following notes:\n"
 
@@ -106,7 +106,7 @@ def send_special_note_message(config: MessageConfig, day_of_week, shift_date, sp
     send_message(config.channel, message)
 
 def send_bike_school_message(config: MessageConfig, day_of_week, shift_date, special_notes):
-    """Sends a message to a slack channel with any notes for the shift left in the calender"""
+    """Sends a message to a slack channel with any notes for the shift left in the calendar"""
     message = "<!channel> " if config.notify_channel else ""
     message += f"Reminder Bike Skool is {get_day_formatted(day_of_week, shift_date)}! These are the notes:\n"
 
