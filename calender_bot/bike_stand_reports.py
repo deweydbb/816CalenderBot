@@ -1,5 +1,7 @@
 import requests
 from pprint import pprint
+import traceback
+
 from calender_bot.slack import send_message
 from calender_bot.config import get_config_from_environment
 
@@ -137,36 +139,45 @@ def get_reporter_details(report):
     return f"{reporter_name} ({reporter_email})"
 
 def send_slack_message_for_new_reports():
+    try:
+        reports = get_new_bike_reports()
 
-    reports = get_new_bike_reports()
+        logging.info(f"reports = {reports}")
 
-    logging.info(f"reports = {reports}")
+        for report in reports:
+            message = f"New <{report['viewUrl']}|Report> for {report['StandLocation']} Maintenance Stand\n"
 
-    for report in reports:
-        message = f"New <{report['viewUrl']}|Report> for {report['StandLocation']} Maintenance Stand\n"
+            message += f"*•* Reported on {get_reported_date(report)}:\n"
 
-        message += f"*•* Reported on {get_reported_date(report)}:\n"
+            message += '*•* Problems:\n'
 
-        message += '*•* Problems:\n'
+            for problem in report['problems']:
+                message += f"\t*•* {problem}\n"
 
-        for problem in report['problems']:
-            message += f"\t*•* {problem}\n"
+            additional_details = report['additionalDetails']
+            if additional_details is not None:
+                message += f"*•* Additional Details: {additional_details}\n"
 
-        additional_details = report['additionalDetails']
-        if additional_details is not None:
-            message += f"*•* Additional Details: {additional_details}\n"
+            reporter = get_reporter_details(report)
+            if reporter is not None:
+                message += f"*•* Reporter: {reporter}\n"
 
-        reporter = get_reporter_details(report)
-        if reporter is not None:
-            message += f"*•* Reporter: {reporter}\n"
+            attachments = report['attachments']
+            if len(attachments) > 0:
+                formatted_urls = ", ".join(f"<{url}|Photo>" for url in attachments)
+                message += f"*•* {formatted_urls}"
 
-        attachments = report['attachments']
-        if len(attachments) > 0:
-            formatted_urls = ", ".join(f"<{url}|Photo>" for url in attachments)
-            message += f"*•* {formatted_urls}"
+            logging.info("sending bike report message in slack: " + message)
 
-        logging.info("sending bike report message in slack: " + message)
+            channel = get_config_from_environment("BIKE_STAND_CHANNEL")
 
-        channel = get_config_from_environment("BIKE_STAND_CHANNEL")
+            send_message(channel, message)
+    except Exception as e:
+        # if failed to run send a message to the bot tester so someone is aware of the failure 
+        stack_trace = traceback.format_exc()
+        error_msg = "Bot encountered error sending bike stand report messages. Error: " + str(e) + " Stack trace: " + stack_trace
+        logging.error(error_msg)
+        
+        send_message("#bot-tester", error_msg)
 
-        send_message(channel, message)
+        raise e
