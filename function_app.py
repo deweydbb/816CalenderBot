@@ -8,6 +8,7 @@ import os
 from calender_bot.calender_bot import send_slack_messages
 from calender_bot.hide_rows import hide_rows
 from calender_bot.slack_poll import create_poll, update_poll
+from calender_bot.bike_stand_reports import send_slack_message_for_new_reports
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -56,6 +57,22 @@ def http_trigger_hide_rows(req: func.HttpRequest) -> func.HttpResponse:
     else:
         hide_rows()
         return func.HttpResponse(f"Hello. Hiding as if today was today")
+    
+
+@app.timer_trigger(schedule="0 0 15 * * *", arg_name="myTimer", run_on_startup=False, use_monitor=False) 
+def bike_stand_reports(myTimer: func.TimerRequest) -> None:
+    logging.info('Python timer trigger function executed.')
+    send_slack_message_for_new_reports()
+
+
+@app.route(route="http_trigger_bike_stand_reports", auth_level=func.AuthLevel.ANONYMOUS)
+def http_trigger_bike_stand_reports(req: func.HttpRequest) -> func.HttpResponse:
+    """Function for testing purposes only. Used to debug and force runs on different days"""
+    logging.info('Python HTTP trigger function processed a request.')
+
+    send_slack_message_for_new_reports()
+
+    return func.HttpResponse(f"Hello. Sending new bike stand reports to slack")
 
 
 # @app.route(route="create_poll", auth_level=func.AuthLevel.ANONYMOUS)
