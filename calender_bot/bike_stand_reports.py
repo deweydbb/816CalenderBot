@@ -1,6 +1,7 @@
 import requests
 from pprint import pprint
 from calender_bot.slack import send_message
+from calender_bot.config import get_config_from_environment
 
 import logging
 
@@ -50,8 +51,8 @@ from zoneinfo import ZoneInfo
 
 
 def get_new_bike_reports():
-    ORG_ID = "4o5uMWTHuOhUVJPd"
-    SURVEY_ID = "c9f4c35e185240aea4663ae995ac67ed"
+    ORG_ID = get_config_from_environment("ORG_ID")
+    SURVEY_ID = get_config_from_environment("SURVEY_ID")
     FEATURE_URL = f"https://services.arcgis.com/{ORG_ID}/arcgis/rest/services/survey123_{SURVEY_ID}_results/FeatureServer/0"
 
     # Query new features
@@ -166,4 +167,6 @@ def send_slack_message_for_new_reports():
 
         logging.info("sending bike report message in slack: " + message)
 
-        send_message('#bot-tester', message)
+        channel = get_config_from_environment("BIKE_STAND_CHANNEL")
+
+        send_message(channel, message)
