@@ -138,7 +138,7 @@ def get_reporter_details(report):
 
     return f"{reporter_name} ({reporter_email})"
 
-def send_slack_message_for_new_reports(interval: int):
+def send_slack_message_for_new_reports(interval=1):
     try:
         reports = get_new_bike_reports(interval)
 

@@ -62,7 +62,7 @@ def http_trigger_hide_rows(req: func.HttpRequest) -> func.HttpResponse:
 @app.timer_trigger(schedule="0 0 15 * * *", arg_name="myTimer", run_on_startup=False, use_monitor=False) 
 def bike_stand_reports(myTimer: func.TimerRequest) -> None:
     logging.info('Python timer trigger function executed.')
-    send_slack_message_for_new_reports()
+    send_slack_message_for_new_reports(1)
 
 
 @app.route(route="http_trigger_bike_stand_reports", auth_level=func.AuthLevel.ANONYMOUS)
