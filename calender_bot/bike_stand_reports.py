@@ -52,14 +52,14 @@ from zoneinfo import ZoneInfo
 # documentation: https://doc.arcgis.com/en/survey123/get-started/integrate-launchwebapp.htm
 
 
-def get_new_bike_reports():
+def get_new_bike_reports(interval: int):
     ORG_ID = get_config_from_environment("ORG_ID")
     SURVEY_ID = get_config_from_environment("SURVEY_ID")
     FEATURE_URL = f"https://services.arcgis.com/{ORG_ID}/arcgis/rest/services/survey123_{SURVEY_ID}_results/FeatureServer/0"
 
     # Query new features
     params = {
-        "where": f"CreationDate >= CURRENT_TIMESTAMP - INTERVAL '1' DAY",
+        "where": f"CreationDate >= CURRENT_TIMESTAMP - INTERVAL '{interval}' DAY",
         "outFields": "CreationDate,Creator,additional_details,email,field_2,name,objectid,what_is_the_problem,what_is_the_problem_other,globalid",
         "f": "json",
         "returnGeometry": "false",
@@ -138,9 +138,9 @@ def get_reporter_details(report):
 
     return f"{reporter_name} ({reporter_email})"
 
-def send_slack_message_for_new_reports():
+def send_slack_message_for_new_reports(interval=1):
     try:
-        reports = get_new_bike_reports()
+        reports = get_new_bike_reports(interval)
 
         logging.info(f"reports = {reports}")
 

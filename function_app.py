@@ -62,7 +62,7 @@ def http_trigger_hide_rows(req: func.HttpRequest) -> func.HttpResponse:
 @app.timer_trigger(schedule="0 0 15 * * *", arg_name="myTimer", run_on_startup=False, use_monitor=False) 
 def bike_stand_reports(myTimer: func.TimerRequest) -> None:
     logging.info('Python timer trigger function executed.')
-    send_slack_message_for_new_reports()
+    send_slack_message_for_new_reports(1)
 
 
 @app.route(route="http_trigger_bike_stand_reports", auth_level=func.AuthLevel.ANONYMOUS)
@@ -70,9 +70,16 @@ def http_trigger_bike_stand_reports(req: func.HttpRequest) -> func.HttpResponse:
     """Function for testing purposes only. Used to debug and force runs on different days"""
     logging.info('Python HTTP trigger function processed a request.')
 
-    send_slack_message_for_new_reports()
+    interval_param = req.params.get('interval')
 
-    return func.HttpResponse(f"Hello. Sending new bike stand reports to slack")
+    try:
+        interval = int(interval_param)
+    except (TypeError, ValueError):
+        interval = 1
+
+    send_slack_message_for_new_reports(interval)
+
+    return func.HttpResponse(f"Hello. Sending new bike stand reports to slack with interval {interval} days")
 
 
 # @app.route(route="create_poll", auth_level=func.AuthLevel.ANONYMOUS)
